@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import dfa.analyses.ConstantBitsFactory;
-import dfa.analyses.ConstantFoldingFactory;
-import dfa.analyses.ReachingDefinitionsFactory;
-import dfa.analyses.TaintFactory;
+import dfa.analyses.*;
 import dfa.analyses.testanalyses.DummyFactory;
 import dfa.analyses.testanalyses.DummyFactoryBackwards;
 import dfa.analyses.testanalyses.SlowDummyFactory;
@@ -54,6 +51,9 @@ public class StaticAnalysisLoader extends AnalysisLoader {
 
         SlowDummyFactory slowDummyFactory = new SlowDummyFactory();
         factoryMap.put(slowDummyFactory.getName(), slowDummyFactory);
+
+        DominanceFactory domFactory = new DominanceFactory();
+        factoryMap.put(domFactory.getName(), domFactory);
 
         setAnalyses(factoryMap);
     }
