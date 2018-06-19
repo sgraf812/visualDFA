@@ -24,6 +24,7 @@ public class UIBasicBlock extends UIAbstractBlock {
     private BasicBlock dfaBasicBlock;
     private DFAExecution<? extends LatticeElement> dfa;
     private LogicalColor currentColor = null;
+    private mxCell header;
 
     /**
      * Creates and inserts a new {@code mxCell} into the {@code mxGraph}, or updates the {@code mxCell} if it already
@@ -39,6 +40,11 @@ public class UIBasicBlock extends UIAbstractBlock {
                     (lineBlocks.size() + 1) * Styles.LINE_HEIGHT, "");
 
             graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, Styles.INITIAL_COLOR, new Object[] { cell });
+
+            mxGeometry headerGeo = new mxGeometry(0, 0, Styles.BLOCK_WIDTH, Styles.LINE_HEIGHT);
+            headerGeo.setRelative(false);
+            header = new mxCell("<span style=\"font-family:monospace;\">Block " + getBlockNumber() + "</span>", headerGeo, "");
+            header.setVertex(true);
         } else {
             LogicalColor newColor = dfa.getCurrentAnalysisState().getColor(dfaBasicBlock);
 
@@ -62,7 +68,7 @@ public class UIBasicBlock extends UIAbstractBlock {
                     throw new IllegalStateException("Error: Unknown LogicalColor.");
                 }
 
-                graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, colorStyle, new Object[] { cell });
+                graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, colorStyle, new Object[] { cell, header });
                 currentColor = newColor;
             }
         }
@@ -70,13 +76,15 @@ public class UIBasicBlock extends UIAbstractBlock {
 
     /**
      * Renders all {@code UILineBlock}s that have previously been added. Additionally, it inserts a top bar above the
-     * first {@code UILineBlock}. This isn't done in {@code render()} so the auto-layouter can be run before child cells
-     * are rendered (otherwise the layouter would change children which is not wanted)
+     * first {@code UILineBlock} and a header. This isn't done in {@code render()} so the auto-layouter can be run
+     * before child cells are rendered (otherwise the layouter would change children which is not wanted)
      *
      * @param analysisState
      *        the state that should be used to render the children
      */
     public void renderChildren(AnalysisState<? extends LatticeElement> analysisState) {
+        graph.addCell(header, cell);
+
         if (lineBlocks.size() > 0) {
             mxGeometry topBarGeometry = new mxGeometry(0, Styles.LINE_HEIGHT, Styles.BLOCK_WIDTH, 0);
             topBarGeometry.setRelative(false);
